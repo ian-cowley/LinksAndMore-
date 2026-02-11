@@ -1,0 +1,30 @@
+﻿<Application x:Class="LinksAndMore.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:LinksAndMore.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global Converters -->
+            <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+            <converters:ItemTypeToIconConverter x:Key="TypeToIconConverter" />
+            <converters:ItemTypeToVisibilityConverter x:Key="TypeToVisibilityConverter" />
+
+            <!-- Custom ScrollBar Style -->
+            <Style TargetType="ScrollBar">
+                <Setter Property="Width" Value="30" />
+                <Setter Property="MinWidth" Value="30" />
+            </Style>
+            
+            <Style TargetType="ScrollViewer">
+                <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
