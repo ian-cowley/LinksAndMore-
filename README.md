@@ -35,7 +35,7 @@ A modern WPF application built with .NET 10 and WPF-UI, designed to help you org
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/spuri/LinksAndMore.git
+   git clone https://github.com/ian-cowley/LinksAndMore-.git
    ```
 2. Open `LinksAndMore.sln` in Visual Studio.
 3. Build and run the project.
