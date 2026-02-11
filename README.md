@@ -3,9 +3,22 @@
 A modern WPF application built with .NET 10 and WPF-UI, designed to help you organize and manage your links and more.
 
 ## Features
-- **Modern UI**: Built with [WPF-UI](https://github.com/lepoco/wpfui) for a Windows 11-style experience.
-- **Dashboard**: Quickly access your most important links.
-- **Settings**: Customize the application theme and manage your data.
+- **Modern Dashboard**: A clean, organized view of all your saved content using Windows 11 Fluent Design.
+- **Content Types**:
+  - 🔗 **Links**: Save URLs for quick access with one-click opening.
+  - 📝 **Notes**: Store important text and thoughts.
+  - 💻 **Snippets**: Keep code or text snippets ready to copy.
+- **Smart Categorization**: Group your links and notes into custom categories (e.g., Work, Personal, Dev).
+- **Instant Search**: Real-time filtering of all items by title or content as you type.
+- **Quick Actions**: 
+  - One-click **Open** for links.
+  - One-click **Copy to Clipboard** for notes and snippets.
+  - Easy **Edit** and **Delete** functionality.
+- **Customizable Themes**: Full support for Light and Dark modes, or sync with your Windows System theme.
+- **Data Management**:
+  - Local JSON storage (privacy-focused).
+  - Easily find and manage your data file path via Settings.
+- **Performance**: Optimized for speed with virtualization for large collections of items.
 
 ## Getting Started
 
