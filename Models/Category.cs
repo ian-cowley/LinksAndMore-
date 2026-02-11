@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace LinksAndMore.Models;
 
@@ -16,5 +17,6 @@ public partial class Category : ObservableObject
     public ObservableCollection<DashboardItem> Items { get; set; } = new();
 
     [ObservableProperty]
+    [property: JsonIgnore]
     private ObservableCollection<DashboardItem> _filteredItems = new();
 }

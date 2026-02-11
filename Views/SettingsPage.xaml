@@ -29,6 +29,12 @@
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
             
             <ui:Card Margin="0,0,0,20">
+                <ui:Card.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#3E3E3E" Offset="0.0" />
+                        <GradientStop Color="#202020" Offset="1.0" />
+                    </LinearGradientBrush>
+                </ui:Card.Background>
                 <StackPanel Margin="10">
                     <ui:TextBlock Text="App Theme" Margin="0,0,0,10" />
                     <StackPanel Orientation="Horizontal">
@@ -62,6 +68,12 @@
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
             <ui:Card Margin="0,0,0,20">
+                <ui:Card.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#3E3E3E" Offset="0.0" />
+                        <GradientStop Color="#202020" Offset="1.0" />
+                    </LinearGradientBrush>
+                </ui:Card.Background>
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -91,6 +103,12 @@
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
             <ui:Card Margin="0,0,0,20">
+                <ui:Card.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#3E3E3E" Offset="0.0" />
+                        <GradientStop Color="#202020" Offset="1.0" />
+                    </LinearGradientBrush>
+                </ui:Card.Background>
                 <StackPanel Margin="10">
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -144,6 +162,12 @@
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
             <ui:Card>
+                <ui:Card.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#3E3E3E" Offset="0.0" />
+                        <GradientStop Color="#202020" Offset="1.0" />
+                    </LinearGradientBrush>
+                </ui:Card.Background>
                 <StackPanel Margin="10">
                     <ui:TextBlock Text="Links &amp; More" FontWeight="Bold" />
                     <ui:TextBlock Text="{Binding AppVersion, StringFormat='Version: {0}'}" 

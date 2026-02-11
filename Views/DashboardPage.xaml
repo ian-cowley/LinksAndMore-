@@ -66,6 +66,12 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <ui:Card Margin="5" Width="250" Padding="12">
+                                        <ui:Card.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#3E3E3E" Offset="0.0" />
+                                                <GradientStop Color="#202020" Offset="1.0" />
+                                            </LinearGradientBrush>
+                                        </ui:Card.Background>
                                         <Grid>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />

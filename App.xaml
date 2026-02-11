@@ -16,6 +16,16 @@
             <converters:ItemTypeToIconConverter x:Key="TypeToIconConverter" />
             <converters:ItemTypeToVisibilityConverter x:Key="TypeToVisibilityConverter" />
 
+            <!-- Card Style with Subtle Shading -->
+            <Style x:Key="GlassCard" TargetType="ui:Card">
+                <Setter Property="Background" Value="#15FFFFFF" />
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="16" ShadowDepth="6" Opacity="0.35" Color="Black" Direction="270" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <!-- Custom ScrollBar Style -->
             <Style TargetType="ScrollBar">
                 <Setter Property="Width" Value="30" />

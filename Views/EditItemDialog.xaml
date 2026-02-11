@@ -6,27 +6,76 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:models="clr-namespace:LinksAndMore.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="400">
-    <StackPanel Margin="0,10,0,10">
-        <ui:TextBlock Text="Type" Margin="0,0,0,5" />
-        <ComboBox x:Name="TypeComboBox" Margin="0,0,0,15" HorizontalAlignment="Stretch">
-            <ComboBoxItem Content="Link" Tag="{x:Static models:ItemType.Link}" IsSelected="True" />
-            <ComboBoxItem Content="Note" Tag="{x:Static models:ItemType.Note}" />
-            <ComboBoxItem Content="Snippet" Tag="{x:Static models:ItemType.Snippet}" />
-        </ComboBox>
+             d:DesignHeight="550" d:DesignWidth="700"
+             Width="650">
+    <Border CornerRadius="10">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#3E3E3E" Offset="0.0" />
+                <GradientStop Color="#202020" Offset="1.0" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <ui:TextBlock Text="Category" Margin="0,0,0,5" />
-        <ComboBox x:Name="CategoryComboBox" Margin="0,0,0,15" HorizontalAlignment="Stretch" DisplayMemberPath="Name" />
+            <ui:TextBlock Text="Edit Item" FontSize="20" FontWeight="Bold" Margin="0,0,0,20" Foreground="White" />
 
-        <ui:TextBlock Text="Title" Margin="0,0,0,5" />
-        <ComboBox x:Name="TitleComboBox" IsEditable="True" Margin="0,0,0,15" HorizontalAlignment="Stretch" />
+            <!-- Type and Category Side by Side -->
+            <Grid Grid.Row="1" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <ui:TextBlock x:Name="ContentLabel" Text="URL / Content" Margin="0,0,0,5" />
-        <ui:TextBox x:Name="ContentTextBox" PlaceholderText="Enter URL or content..." 
-                    AcceptsReturn="True" MinHeight="60" Margin="0,0,0,15" />
+                <StackPanel Grid.Column="0">
+                    <ui:TextBlock Text="Type" Margin="0,0,0,5" Foreground="#D0D0D0" />
+                    <ComboBox x:Name="TypeComboBox" HorizontalAlignment="Stretch">
+                        <ComboBoxItem Content="Link" Tag="{x:Static models:ItemType.Link}" IsSelected="True" />
+                        <ComboBoxItem Content="Note" Tag="{x:Static models:ItemType.Note}" />
+                        <ComboBoxItem Content="Snippet" Tag="{x:Static models:ItemType.Snippet}" />
+                        <ComboBoxItem Content="Password" Tag="{x:Static models:ItemType.Password}" />
+                    </ComboBox>
+                </StackPanel>
 
-        <ui:TextBlock Text="Description (Optional)" Margin="0,0,0,5" />
-        <ui:TextBox x:Name="DescriptionTextBox" PlaceholderText="Enter description..." 
-                    AcceptsReturn="True" MinHeight="60" />
-    </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <ui:TextBlock Text="Category" Margin="0,0,0,5" Foreground="#D0D0D0" />
+                    <ComboBox x:Name="CategoryComboBox" HorizontalAlignment="Stretch" DisplayMemberPath="Name" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Title -->
+            <StackPanel Grid.Row="2" Margin="0,0,0,15">
+                <ui:TextBlock Text="Title" Margin="0,0,0,5" Foreground="#D0D0D0" />
+                <ComboBox x:Name="TitleComboBox" IsEditable="True" HorizontalAlignment="Stretch" />
+            </StackPanel>
+
+            <!-- URL / Content -->
+            <StackPanel Grid.Row="3" Margin="0,0,0,15">
+                <ui:TextBlock x:Name="ContentLabel" Text="URL / Content" Margin="0,0,0,5" Foreground="#D0D0D0" />
+                <ui:TextBox x:Name="ContentTextBox" PlaceholderText="Enter URL or content..." 
+                            AcceptsReturn="True" MinHeight="60" />
+            </StackPanel>
+
+            <!-- Description -->
+            <StackPanel Grid.Row="4" Margin="0,0,0,20">
+                <ui:TextBlock Text="Description (Optional)" Margin="0,0,0,5" Foreground="#D0D0D0" />
+                <ui:TextBox x:Name="DescriptionTextBox" PlaceholderText="Enter description..." 
+                            AcceptsReturn="True" MinHeight="60" />
+            </StackPanel>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button x:Name="SaveButton" Content="Save" Appearance="Primary" Width="80" Click="OnSaveClick" />
+                <ui:Button x:Name="CancelButton" Content="Cancel" Width="80" Margin="10,0,0,0" Click="OnCancelClick" />
+            </StackPanel>
+        </Grid>
+    </Border>
 </UserControl>

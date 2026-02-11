@@ -22,7 +22,8 @@ public partial class DashboardViewModel : ObservableObject
     private string? _lastSearchText;
     private bool _isDirty;
 
-    public ObservableCollection<Category> FilteredCategories { get; } = new();
+    [ObservableProperty]
+    private ObservableCollection<Category> _filteredCategories = new();
 
     public DashboardViewModel(IDataService dataService)
     {
@@ -113,14 +114,11 @@ public partial class DashboardViewModel : ObservableObject
                             i.Content.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
-            // Only update if the list changed to avoid UI flickering/extra work
+            // Only update if the list changed via replacement to trigger single notification
+            // and because FilteredItems is now [JsonIgnore] and transient
             if (!category.FilteredItems.SequenceEqual(filtered))
             {
-                category.FilteredItems.Clear();
-                foreach (var item in filtered)
-                {
-                    category.FilteredItems.Add(item);
-                }
+                category.FilteredItems = new ObservableCollection<DashboardItem>(filtered);
             }
         }
 
@@ -129,11 +127,7 @@ public partial class DashboardViewModel : ObservableObject
         
         if (!FilteredCategories.SequenceEqual(visibleCategories))
         {
-            FilteredCategories.Clear();
-            foreach (var category in visibleCategories)
-            {
-                FilteredCategories.Add(category);
-            }
+            FilteredCategories = new ObservableCollection<Category>(visibleCategories);
         }
     }
 
@@ -142,22 +136,55 @@ public partial class DashboardViewModel : ObservableObject
     {
         if (item.Type == ItemType.Link && !string.IsNullOrEmpty(item.Content))
         {
-            Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = item.Content,
-                UseShellExecute = true
-            });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = item.Content,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error opening link: {ex.Message}");
+            }
+        }
+    }
+
+    [RelayCommand]
+    private async Task UnlockPassword(DashboardItem item)
+    {
+        if (item.Type == ItemType.Password && item.IsLocked)
+        {
+            var success = await App.BiometricService.AuthenticateUserAsync("Please authenticate to show your password.");
+            if (success)
+            {
+                item.DecryptedContent = App.SecurityService.Decrypt(item.Content);
+                item.IsLocked = false;
+                
+                // Auto-lock after 30 seconds
+                _ = Task.Delay(30000).ContinueWith(_ => 
+                {
+                    item.IsLocked = true;
+                    item.DecryptedContent = string.Empty;
+                });
+            }
         }
     }
 
     [RelayCommand]
     private void CopyToClipboard(DashboardItem item)
     {
-        if (!string.IsNullOrEmpty(item.Content))
+        string textToCopy = item.Type == ItemType.Password ? 
+            (item.IsLocked ? string.Empty : item.DecryptedContent) : 
+            item.Content;
+
+        if (!string.IsNullOrEmpty(textToCopy))
         {
-            System.Windows.Clipboard.SetText(item.Content);
+            System.Windows.Clipboard.SetText(textToCopy);
         }
     }
+
     [RelayCommand]
     private async Task DeleteItem(DashboardItem item)
     {

@@ -18,11 +18,8 @@ public partial class DashboardPage
         DataContext = new DashboardViewModel(App.DataService);
     }
 
-    private async void OnAddItemClick(object sender, System.Windows.RoutedEventArgs e)
+    private async Task<EditItemDialog?> ShowEditItemDialogAsync(DashboardItem item, DashboardViewModel viewModel, Category? currentCategory)
     {
-        var viewModel = (DashboardViewModel)DataContext;
-        var newItem = new DashboardItem { Title = "", Type = ItemType.Link };
-        
         var allTitles = viewModel.Categories
             .SelectMany(c => c.Items)
             .Select(i => i.Title)
@@ -30,26 +27,50 @@ public partial class DashboardPage
             .OrderBy(t => t);
 
         var dialogContent = new EditItemDialog();
-        dialogContent.LoadItem(newItem, viewModel.Categories, allTitles, viewModel.Categories.FirstOrDefault());
+        dialogContent.LoadItem(item, viewModel.Categories, allTitles, currentCategory);
 
         var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
 
         var dialog = new Ui.ContentDialog()
         {
             DialogHostEx = mainWindow.RootContentDialogPresenter,
-            Title = "Add New Item",
-            Content = dialogContent,
-            PrimaryButtonText = "Add",
-            CloseButtonText = "Cancel",
-            DefaultButton = Ui.ContentDialogButton.Primary
+            Content = dialogContent
         };
 
-        var result = await dialog.ShowAsync();
+        Ui.ContentDialogResult customResult = Ui.ContentDialogResult.None;
 
-        if (result == Ui.ContentDialogResult.Primary)
+        dialogContent.SaveClicked += (s, args) =>
         {
-            dialogContent.SaveToItem(newItem);
-            var targetCategory = dialogContent.SelectedCategory;
+            customResult = Ui.ContentDialogResult.Primary;
+            dialog.Hide();
+        };
+
+        dialogContent.CancelClicked += (s, args) =>
+        {
+            dialog.Hide();
+        };
+
+        await dialog.ShowAsync();
+
+        if (customResult == Ui.ContentDialogResult.Primary)
+        {
+            dialogContent.SaveToItem(item);
+            return dialogContent;
+        }
+
+        return null;
+    }
+
+    private async void OnAddItemClick(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var viewModel = (DashboardViewModel)DataContext;
+        var newItem = new DashboardItem { Title = "", Type = ItemType.Link };
+        
+        var resultDialog = await ShowEditItemDialogAsync(newItem, viewModel, viewModel.Categories.FirstOrDefault());
+
+        if (resultDialog != null)
+        {
+            var targetCategory = resultDialog.SelectedCategory;
             
             if (targetCategory != null)
             {
@@ -69,33 +90,11 @@ public partial class DashboardPage
             // Find current category
             var currentCategory = viewModel.Categories.FirstOrDefault(c => c.Items.Contains(item));
 
-            var allTitles = viewModel.Categories
-                .SelectMany(c => c.Items)
-                .Select(i => i.Title)
-                .Distinct()
-                .OrderBy(t => t);
+            var resultDialog = await ShowEditItemDialogAsync(item, viewModel, currentCategory);
 
-            var dialogContent = new EditItemDialog();
-            dialogContent.LoadItem(item, viewModel.Categories, allTitles, currentCategory);
-
-            var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-
-            var dialog = new Ui.ContentDialog()
+            if (resultDialog != null)
             {
-                DialogHostEx = mainWindow.RootContentDialogPresenter,
-                Title = "Edit Item",
-                Content = dialogContent,
-                PrimaryButtonText = "Save",
-                CloseButtonText = "Cancel",
-                DefaultButton = Ui.ContentDialogButton.Primary
-            };
-
-            var result = await dialog.ShowAsync();
-
-            if (result == Ui.ContentDialogResult.Primary)
-            {
-                dialogContent.SaveToItem(item);
-                var targetCategory = dialogContent.SelectedCategory;
+                var targetCategory = resultDialog.SelectedCategory;
 
                 // Handle category move
                 if (targetCategory != null && targetCategory != currentCategory)

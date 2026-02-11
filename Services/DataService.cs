@@ -43,7 +43,33 @@ public class DataService : IDataService
             Directory.CreateDirectory(directory);
         }
 
-        using FileStream createStream = File.Create(DataFilePath);
-        await JsonSerializer.SerializeAsync(createStream, categories, _options);
+        string tempFilePath = Path.ChangeExtension(DataFilePath, ".tmp");
+
+        try
+        {
+            using (FileStream createStream = File.Create(tempFilePath))
+            {
+                await JsonSerializer.SerializeAsync(createStream, categories, _options);
+            }
+
+            // Atomic replace
+            if (File.Exists(DataFilePath))
+            {
+                File.Replace(tempFilePath, DataFilePath, null);
+            }
+            else
+            {
+                File.Move(tempFilePath, DataFilePath);
+            }
+        }
+        catch (Exception)
+        {
+            // Ensure temp file is cleaned up if copy fails
+            if (File.Exists(tempFilePath))
+            {
+                try { File.Delete(tempFilePath); } catch { }
+            }
+            throw; // Propagate error
+        }
     }
 }
