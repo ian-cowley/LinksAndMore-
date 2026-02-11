@@ -10,8 +10,8 @@ A modern WPF application built with .NET 10 and WPF-UI, designed to help you org
 ## Getting Started
 
 ### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- Visual Studio 2022 (recommended)
+- [dotnet 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- Visual Studio 2026 (recommended)
 
 ### Installation
 1. Clone the repository:
