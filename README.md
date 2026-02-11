@@ -3,6 +3,9 @@
 A modern WPF application built with .NET 10 and WPF-UI, designed to help you organize and manage your links and more.
 
 ## Features
+
+![Dashboard Preview](assets/dashboard.png)
+
 - **Modern Dashboard**: A clean, organized view of all your saved content using Windows 11 Fluent Design.
 - **Content Types**:
   - 🔗 **Links**: Save URLs for quick access with one-click opening.
@@ -10,6 +13,9 @@ A modern WPF application built with .NET 10 and WPF-UI, designed to help you org
   - 💻 **Snippets**: Keep code or text snippets ready to copy.
 - **Smart Categorization**: Group your links and notes into custom categories (e.g., Work, Personal, Dev).
 - **Instant Search**: Real-time filtering of all items by title or content as you type.
+
+![Settings Preview](assets/settings.png)
+
 - **Quick Actions**: 
   - One-click **Open** for links.
   - One-click **Copy to Clipboard** for notes and snippets.
