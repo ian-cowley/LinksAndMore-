@@ -26,9 +26,9 @@ jobs:
       run: dotnet publish LinksAndMore.csproj -c Release -r win-x64 --self-contained true -o ./publish /p:PublishSingleFile=true /p:PublishReadyToRun=true
 
     - name: Compile Inno Setup Script
-      uses: aybe/inno-setup-action@v1.2.2
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
       with:
-        filepath: Installer/LinksAndMore.iss
+        path: Installer/LinksAndMore.iss
 
     - name: Create Release
       id: create_release
