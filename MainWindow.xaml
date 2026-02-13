@@ -12,7 +12,7 @@
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
         WindowBackdropType="Mica"
-        Icon="assets/app_icon.png">
+        Icon="assets/app_icon.ico">
 
     <Grid>
         <Grid.RowDefinitions>
