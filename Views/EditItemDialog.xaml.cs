@@ -9,8 +9,8 @@ namespace LinksAndMore.Views;
 
 public partial class EditItemDialog : UserControl
 {
-    public event EventHandler SaveClicked;
-    public event EventHandler CancelClicked;
+    public event EventHandler? SaveClicked;
+    public event EventHandler? CancelClicked;
 
     public EditItemDialog()
     {
