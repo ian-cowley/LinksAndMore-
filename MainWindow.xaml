@@ -11,7 +11,8 @@
         Title="Links &amp; More" Height="700" Width="1100"
         WindowStartupLocation="CenterScreen"
         ExtendsContentIntoTitleBar="True"
-        WindowBackdropType="Mica">
+        WindowBackdropType="Mica"
+        Icon="assets/app_icon.png">
 
     <Grid>
         <Grid.RowDefinitions>
