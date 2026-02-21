@@ -1,6 +1,6 @@
 ; Inno Setup Script for Links & More
 #define MyAppName "Links & More"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "2.0.0"
 #define MyAppPublisher "Ian Cowley"
 #define MyAppURL "https://github.com/ian-cowley/LinksAndMore"
 #define MyAppExeName "LinksAndMore.exe"

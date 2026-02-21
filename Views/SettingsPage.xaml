@@ -94,9 +94,9 @@
                 </Grid>
             </ui:Card>
 
-            <!-- Category Management -->
+            <!-- Search Features -->
             <ui:TextBlock
-                Text="Category Management"
+                Text="Search Features"
                 FontSize="18"
                 FontWeight="SemiBold"
                 Margin="0,0,0,10"
@@ -109,48 +109,22 @@
                         <GradientStop Color="#202020" Offset="1.0" />
                     </LinearGradientBrush>
                 </ui:Card.Background>
-                <StackPanel Margin="10">
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBox PlaceholderText="New Category Name" 
-                                    Text="{Binding NewCategoryName, UpdateSourceTrigger=PropertyChanged}" />
-                        <ui:Button Grid.Column="1" 
-                                   Content="Add Category" 
-                                   Icon="{ui:SymbolIcon Add24}"
-                                   Command="{Binding AddCategoryCommand}"
-                                   Margin="10,0,0,0" />
-                    </Grid>
-
-                    <ui:TextBlock Text="Existing Categories" FontWeight="SemiBold" Margin="0,10,0,5" />
-                    <ItemsControl ItemsSource="{Binding Categories}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <ui:TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
-                                                VerticalAlignment="Center">
-                                        <ui:TextBox.InputBindings>
-                                            <KeyBinding Key="Enter" Command="{Binding DataContext.SaveDataCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                        </ui:TextBox.InputBindings>
-                                    </ui:TextBox>
-                                    <ui:Button Grid.Column="1" 
-                                               Icon="{ui:SymbolIcon Delete24}"
-                                               Appearance="Transparent"
-                                               Foreground="Red"
-                                               Command="{Binding DataContext.DeleteCategoryCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                               CommandParameter="{Binding}"
-                                               Margin="5,0,0,0" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <ui:TextBlock Text="AI Semantic Search" FontWeight="SemiBold" />
+                        <ui:TextBlock Text="Use local AI to find links based on concept and meaning instead of strict text matches." 
+                                    FontSize="12" 
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" 
+                               IsChecked="{Binding IsSemanticSearchEnabled, Mode=TwoWay}" 
+                               VerticalAlignment="Center" />
+                </Grid>
             </ui:Card>
 
             <!-- About -->

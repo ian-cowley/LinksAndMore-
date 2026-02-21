@@ -16,6 +16,14 @@ public partial class DashboardPage
         InitializeComponent();
         
         DataContext = new DashboardViewModel(App.DataService);
+
+        Loaded += (s, e) =>
+        {
+            if (DataContext is DashboardViewModel vm)
+            {
+                vm.IsSemanticSearchEnabled = App.IsSemanticSearchEnabled;
+            }
+        };
     }
 
     private async Task<EditItemDialog?> ShowEditItemDialogAsync(DashboardItem item, DashboardViewModel viewModel, Category? currentCategory)
@@ -74,6 +82,9 @@ public partial class DashboardPage
             
             if (targetCategory != null)
             {
+                string textToEmbed = $"Title: {newItem.Title}. Description: {newItem.Description ?? string.Empty}.";
+                newItem.VectorEmbedding = App.SemanticEngine.GenerateEmbedding(textToEmbed);
+
                 targetCategory.Items.Add(newItem);
                 await viewModel.SaveDataCommand.ExecuteAsync(null);
                 viewModel.Refresh();
@@ -96,12 +107,14 @@ public partial class DashboardPage
             {
                 var targetCategory = resultDialog.SelectedCategory;
 
-                // Handle category move
                 if (targetCategory != null && targetCategory != currentCategory)
                 {
                     currentCategory?.Items.Remove(item);
                     targetCategory.Items.Add(item);
                 }
+
+                string textToEmbed = $"Title: {item.Title}. Description: {item.Description ?? string.Empty}.";
+                item.VectorEmbedding = App.SemanticEngine.GenerateEmbedding(textToEmbed);
 
                 await viewModel.SaveDataCommand.ExecuteAsync(null);
                 viewModel.Refresh();

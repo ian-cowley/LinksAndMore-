@@ -37,6 +37,10 @@
                     Content="Dashboard"
                     Icon="{ui:SymbolIcon Board24}"
                     TargetPageType="{x:Type views:DashboardPage}" />
+                <ui:NavigationViewItem 
+                    Content="Categories" 
+                    Icon="{ui:SymbolIcon Tag24}"
+                    TargetPageType="{x:Type views:CategoriesPage}" />
             </ui:NavigationView.MenuItems>
             
             <ui:NavigationView.FooterMenuItems>

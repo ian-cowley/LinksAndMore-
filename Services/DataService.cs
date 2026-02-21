@@ -2,6 +2,8 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.ObjectModel;
 using LinksAndMore.Models;
+using LinksAndMore.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace LinksAndMore.Services;
 
@@ -13,63 +15,118 @@ public interface IDataService
 
 public class DataService : IDataService
 {
-    private static readonly string DataFilePath = Path.Combine(
+    private static readonly string DataDirPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
-        "LinksAndMore", "links.json");
+        "LinksAndMore");
+    private static readonly string JsonDataFilePath = Path.Combine(DataDirPath, "links.json");
+    private static readonly string DbFilePath = Path.Combine(DataDirPath, "links.db");
 
-    private readonly JsonSerializerOptions _options = new()
+    private readonly DbContextOptions<AppDbContext> _dbOptions;
+
+    public DataService()
     {
-        WriteIndented = true,
-        PropertyNameCaseInsensitive = true
-    };
+        if (!Directory.Exists(DataDirPath))
+        {
+            Directory.CreateDirectory(DataDirPath);
+        }
+
+        var builder = new DbContextOptionsBuilder<AppDbContext>();
+        builder.UseSqlite($"Data Source={DbFilePath}");
+        _dbOptions = builder.Options;
+
+        // Ensure database is created and run migration from JSON
+        using var db = new AppDbContext(_dbOptions);
+        db.Database.EnsureCreated();
+        MigrateJsonDataIfNeeded();
+    }
+
+    private void MigrateJsonDataIfNeeded()
+    {
+        if (File.Exists(JsonDataFilePath))
+        {
+            try
+            {
+                using var db = new AppDbContext(_dbOptions);
+                if (!db.Categories.Any()) // Only migrate if DB is empty
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+                    string json = File.ReadAllText(JsonDataFilePath);
+                    var categories = JsonSerializer.Deserialize<List<Category>>(json, options);
+                    
+                    if (categories != null)
+                    {
+                        foreach (var cat in categories)
+                        {
+                            db.Categories.Add(cat);
+                        }
+                        db.SaveChanges();
+                    }
+                }
+                
+                // Backup the JSON file so we don't migrate again
+                File.Move(JsonDataFilePath, JsonDataFilePath + ".bak");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Migration failed: {ex.Message}");
+            }
+        }
+    }
 
     public async Task<ObservableCollection<Category>> LoadDataAsync()
     {
-        if (!File.Exists(DataFilePath))
-        {
-            return new ObservableCollection<Category>();
-        }
-
-        using FileStream openStream = File.OpenRead(DataFilePath);
-        var data = await JsonSerializer.DeserializeAsync<List<Category>>(openStream, _options);
-        return new ObservableCollection<Category>(data ?? new List<Category>());
+        using var db = new AppDbContext(_dbOptions);
+        var categories = await db.Categories
+            .Include(c => c.Items)
+            .ToListAsync();
+            
+        return new ObservableCollection<Category>(categories);
     }
 
     public async Task SaveDataAsync(ObservableCollection<Category> categories)
     {
-        var directory = Path.GetDirectoryName(DataFilePath);
-        if (directory != null && !Directory.Exists(directory))
+        using var db = new AppDbContext(_dbOptions);
+        
+        var existingCategories = await db.Categories.Include(c => c.Items).ToListAsync();
+        
+        var categoryIdsToKeep = categories.Select(c => c.Id).ToList();
+        var categoriesToRemove = existingCategories.Where(c => !categoryIdsToKeep.Contains(c.Id)).ToList();
+        
+        db.Categories.RemoveRange(categoriesToRemove);
+        
+        foreach (var category in categories)
         {
-            Directory.CreateDirectory(directory);
-        }
-
-        string tempFilePath = Path.ChangeExtension(DataFilePath, ".tmp");
-
-        try
-        {
-            using (FileStream createStream = File.Create(tempFilePath))
+            var existingCategory = existingCategories.FirstOrDefault(c => c.Id == category.Id);
+            if (existingCategory == null)
             {
-                await JsonSerializer.SerializeAsync(createStream, categories, _options);
-            }
-
-            // Atomic replace
-            if (File.Exists(DataFilePath))
-            {
-                File.Replace(tempFilePath, DataFilePath, null);
+                db.Categories.Add(category);
             }
             else
             {
-                File.Move(tempFilePath, DataFilePath);
+                db.Entry(existingCategory).CurrentValues.SetValues(category);
+                
+                var itemIdsToKeep = category.Items.Select(i => i.Id).ToList();
+                var itemsToRemove = existingCategory.Items.Where(i => !itemIdsToKeep.Contains(i.Id)).ToList();
+                db.Items.RemoveRange(itemsToRemove);
+                
+                foreach (var item in category.Items)
+                {
+                    var existingItem = existingCategory.Items.FirstOrDefault(i => i.Id == item.Id);
+                    if (existingItem == null)
+                    {
+                        existingCategory.Items.Add(item);
+                    }
+                    else
+                    {
+                        db.Entry(existingItem).CurrentValues.SetValues(item);
+                    }
+                }
             }
         }
-        catch (Exception)
-        {
-            // Ensure temp file is cleaned up if copy fails
-            if (File.Exists(tempFilePath))
-            {
-                try { File.Delete(tempFilePath); } catch { }
-            }
-            throw; // Propagate error
-        }
+        
+        await db.SaveChangesAsync();
     }
 }

@@ -67,5 +67,8 @@ To build the project from the command line:
 dotnet build
 ```
 
+## Credits
+Developed by Ian Cowley and Antigravity (Google DeepMind).
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

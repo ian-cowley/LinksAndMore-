@@ -19,11 +19,21 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    [ObservableProperty]
+    private bool _isSemanticSearchEnabled = App.IsSemanticSearchEnabled;
+
     private string? _lastSearchText;
+    private bool? _lastSemanticState;
     private bool _isDirty;
 
     [ObservableProperty]
     private ObservableCollection<Category> _filteredCategories = new();
+
+    [ObservableProperty]
+    private string _indexingProgressText = string.Empty;
+
+    [ObservableProperty]
+    private bool _isBusy;
 
     public DashboardViewModel(IDataService dataService)
     {
@@ -84,9 +94,43 @@ public partial class DashboardViewModel : ObservableObject
         {
             Categories = await _dataService.LoadDataAsync();
             Refresh();
+
+            // Handle AI Init Pipeline
+            if (!ModelDownloadService.IsModelDownloaded())
+            {
+                IsBusy = true;
+                IndexingProgressText = "Downloading AI Model (90MB)...";
+                var progress = new Progress<double>(p => 
+                {
+                    IndexingProgressText = $"Downloading AI Model... {(int)(p * 100)}%";
+                });
+                await ModelDownloadService.DownloadModelAsync(progress);
+                
+                // Re-init SemanticEngine now that it's downloaded
+                App.SemanticEngine.GenerateEmbedding("warmup");
+            }
+
+            var indexer = new BackgroundIndexer(_dataService, App.SemanticEngine);
+            indexer.ProgressChanged += (s, e) =>
+            {
+                if (e.Processed < e.Total)
+                {
+                    IsBusy = true;
+                    IndexingProgressText = $"Updating AI Index... {e.Processed}/{e.Total}";
+                }
+                else
+                {
+                    IsBusy = false;
+                    IndexingProgressText = string.Empty;
+                }
+            };
+            
+            await indexer.StartIndexingAsync();
+            IsBusy = false;
         }
         catch (Exception ex)
         {
+            IsBusy = false;
             Debug.WriteLine($"Error initializing dashboard: {ex.Message}");
         }
     }
@@ -96,33 +140,87 @@ public partial class DashboardViewModel : ObservableObject
         Refresh();
     }
 
+    partial void OnIsSemanticSearchEnabledChanged(bool value)
+    {
+        App.IsSemanticSearchEnabled = value;
+        Refresh();
+    }
+
     public void Refresh()
     {
-        if (!_isDirty && _lastSearchText == SearchText)
+        if (!_isDirty && _lastSearchText == SearchText && _lastSemanticState == IsSemanticSearchEnabled)
         {
             return;
         }
 
         _lastSearchText = SearchText;
+        _lastSemanticState = IsSemanticSearchEnabled;
         _isDirty = false;
+
+        float[]? queryVector = null;
+        if (IsSemanticSearchEnabled && !string.IsNullOrWhiteSpace(SearchText))
+        {
+            queryVector = App.SemanticEngine.GenerateEmbedding(SearchText);
+        }
 
         foreach (var category in Categories)
         {
-            var filtered = category.Items
-                .Where(i => string.IsNullOrEmpty(SearchText) ||
-                            i.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                            i.Content.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+            List<DashboardItem> filtered;
+
+            if (IsSemanticSearchEnabled)
+            {
+                var scoredItems = category.Items.Select(i => 
+                {
+                    float score = 0;
+                    if (string.IsNullOrWhiteSpace(SearchText) || queryVector == null)
+                    {
+                        score = 1;
+                        i.RelevanceString = "AI Active";
+                    }
+                    else if (i.VectorEmbedding != null)
+                    {
+                        score = App.SemanticEngine.CalculateCosineSimilarity(queryVector, i.VectorEmbedding);
+                        i.RelevanceString = score > 0 ? $"{(int)(score * 100)}% Match" : string.Empty;
+                    }
+                    else
+                    {
+                        bool isTextMatch = i.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                           i.Content.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+                        score = isTextMatch ? 1 : 0;
+                        i.RelevanceString = isTextMatch ? "Text Match" : string.Empty;
+                    }
+                    
+                    i.RelevanceScore = score;
+                    return new { Item = i, Score = score };
+                })
+                .Where(x => string.IsNullOrWhiteSpace(SearchText) || x.Score > 0.3f) // Filter low relevance
+                .OrderByDescending(x => x.Score)
+                .Select(x => x.Item)
                 .ToList();
 
-            // Only update if the list changed via replacement to trigger single notification
-            // and because FilteredItems is now [JsonIgnore] and transient
+                filtered = scoredItems;
+            }
+            else
+            {
+                filtered = category.Items
+                    .Where(i => string.IsNullOrEmpty(SearchText) ||
+                                i.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                i.Content.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .Select(i => 
+                    {
+                        i.RelevanceScore = 0;
+                        i.RelevanceString = string.Empty;
+                        return i;
+                    })
+                    .ToList();
+            }
+
             if (!category.FilteredItems.SequenceEqual(filtered))
             {
                 category.FilteredItems = new ObservableCollection<DashboardItem>(filtered);
             }
         }
 
-        // Update the list of categories that have at least one visible item
         var visibleCategories = Categories.Where(c => c.FilteredItems.Any()).ToList();
         
         if (!FilteredCategories.SequenceEqual(visibleCategories))

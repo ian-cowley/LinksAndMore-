@@ -34,4 +34,16 @@ public partial class DashboardItem : ObservableObject
 
     [ObservableProperty]
     private ItemType _type = ItemType.Link;
+
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private float[]? _vectorEmbedding;
+
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private string? _relevanceString;
+
+    [ObservableProperty]
+    [property: JsonIgnore]
+    private float _relevanceScore;
 }

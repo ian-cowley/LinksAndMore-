@@ -17,19 +17,21 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IDataService _dataService;
 
     [ObservableProperty]
-    private string _appVersion = "1.0.0";
+    private string _appVersion = "2.0.0";
 
     [ObservableProperty]
     private string _dataFilePath;
 
     [ObservableProperty]
+    private bool _isSemanticSearchEnabled = App.IsSemanticSearchEnabled;
+
+    partial void OnIsSemanticSearchEnabledChanged(bool value)
+    {
+        App.IsSemanticSearchEnabled = value;
+    }
+
+    [ObservableProperty]
     private Wpf.Ui.Appearance.ApplicationTheme _selectedTheme;
-
-    [ObservableProperty]
-    private ObservableCollection<Category> _categories;
-
-    [ObservableProperty]
-    private string _newCategoryName = string.Empty;
 
     public SettingsViewModel(IDataService dataService)
     {
@@ -39,25 +41,6 @@ public partial class SettingsViewModel : ObservableObject
             "LinksAndMore", "links.json");
         
         _selectedTheme = ApplicationThemeManager.GetAppTheme();
-
-        _categories = new ObservableCollection<Category>();
-        _ = LoadData();
-    }
-
-    private async Task LoadData()
-    {
-        try
-        {
-            var loadedCategories = await _dataService.LoadDataAsync();
-            foreach (var category in loadedCategories)
-            {
-                Categories.Add(category);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error loading settings data: {ex.Message}");
-        }
     }
 
     [RelayCommand]
@@ -96,43 +79,4 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private async Task AddCategory()
-    {
-        if (string.IsNullOrWhiteSpace(NewCategoryName)) return;
-
-        var category = new Category { Name = NewCategoryName };
-        Categories.Add(category);
-        NewCategoryName = string.Empty;
-        await SaveData();
-    }
-
-    [RelayCommand]
-    private async Task DeleteCategory(Category category)
-    {
-        if (category == null) return;
-        
-        // If it has items, we might want to move them or warn. 
-        // For now, let's just delete it to keep it simple, or move items to the first category if it exists.
-        if (Categories.Count > 1)
-        {
-            var target = Categories.FirstOrDefault(c => c != category);
-            if (target != null)
-            {
-                foreach (var item in category.Items.ToList())
-                {
-                    target.Items.Add(item);
-                }
-            }
-        }
-        
-        Categories.Remove(category);
-        await SaveData();
-    }
-
-    [RelayCommand]
-    private async Task SaveData()
-    {
-        await _dataService.SaveDataAsync(Categories);
-    }
 }

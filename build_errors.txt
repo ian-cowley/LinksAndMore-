@@ -1,0 +1,18 @@
+  Determining projects to restore...
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.sln]
+  All projects are up-to-date for restore.
+C:\Program Files\dotnet\sdk\10.0.200-preview.0.26103.119\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.RuntimeIdentifierInference.targets(383,5): message NETSDK1057: You are using a preview version of .NET. See: https://aka.ms/dotnet-support-policy [C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.csproj]
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore_3pisebxc_wpftmp.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj
+C:\Users\spuri\source\repos\LinksAndMore\ViewModels\SettingsViewModel.cs(85,1): error CS1022: Type or namespace definition, or end-of-file expected [C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore_3pisebxc_wpftmp.csproj]
+
+Build FAILED.
+
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj [C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.sln]
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj
+C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore_3pisebxc_wpftmp.csproj : warning NU1903: Package 'Microsoft.Extensions.Caching.Memory' 8.0.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-qj66-m88j-hmgj
+C:\Users\spuri\source\repos\LinksAndMore\ViewModels\SettingsViewModel.cs(85,1): error CS1022: Type or namespace definition, or end-of-file expected [C:\Users\spuri\source\repos\LinksAndMore\LinksAndMore_3pisebxc_wpftmp.csproj]
+    3 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.13
