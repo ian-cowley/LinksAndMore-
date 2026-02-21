@@ -23,14 +23,20 @@ A modern WPF application built with .NET 10 and WPF-UI, designed to help you org
 - **Auto-Lock Security**: Passwords automatically re-lock after viewing
 - **One-Click Copy**: Copy unlocked passwords to clipboard instantly
 
+### 🧠 Semantic Vault (AI Search)
+- **100% Local & Private**: All AI processing happens natively on your device. Absolutely no cloud APIs or data telemetry.
+- **Meaning-Based Search**: Uses the `all-MiniLM-L6-v2` ONNX model to understand the *concept* behind your search, finding related links even if you don't use exact keywords.
+- **Auto-Indexing**: Links are seamlessly vectorized in the background as you browse or add new items.
+
 ### ⚡ Quick Actions
   - One-click **Open** for links.
   - One-click **Copy to Clipboard** for notes and snippets.
   - Easy **Edit** and **Delete** functionality.
 - **Customizable Themes**: Full support for Light and Dark modes, or sync with your Windows System theme.
 - **Data Management**:
-  - Local JSON storage (privacy-focused).
-  - Easily find and manage your data file path via Settings.
+  - Robust local SQLite database using Entity Framework Core.
+  - Seamless automatic migration from legacy JSON storage.
+  - Easily find and manage your database location via Settings.
 - **Performance**: Optimized for speed with virtualization for large collections of items.
 
 ## Security
@@ -44,6 +50,8 @@ A modern WPF application built with .NET 10 and WPF-UI, designed to help you org
 - **Framework**: .NET 10.0 (Windows 10.0.19041.0 SDK)
 - **UI Library**: WPF-UI (Windows 11 Fluent Design)
 - **MVVM**: CommunityToolkit.Mvvm
+- **Database**: Entity Framework Core (SQLite)
+- **AI Engine**: Microsoft.ML.OnnxRuntime & Microsoft.ML.Tokenizers
 - **Security**: Windows DPAPI, Windows Hello (UserConsentVerifier)
 
 ## Getting Started
